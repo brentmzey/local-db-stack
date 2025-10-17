@@ -34,14 +34,30 @@ Before you begin, ensure you have the following installed and running:
 
 You only need to do this once.
 
-> **Important**: After installing, you **must restart your terminal** or source your profile (e.g., `source ~/.zshrc` or `source ~/.bashrc`) to activate the new commands.
+### Quick Install (One Command)
 
-### Universal Installer (`curl` to `bash`)
-
-This method works on macOS, Linux, and WSL2. It downloads and runs the installer script directly from the repository.
+Run this command in your terminal (works on macOS, Linux, and WSL2):
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/brentmzey/local-db-stack/main/install.sh)
+```
+
+### After Installation
+
+**You MUST restart your terminal** or run one of these commands to activate the new `localdb-*` commands:
+
+```bash
+# If you use Zsh (default on macOS)
+source ~/.zshrc
+
+# If you use Bash
+source ~/.bashrc
+```
+
+Once your terminal is restarted or sourced, test the installation:
+
+```bash
+localdb-up
 ```
 
 ---
@@ -110,15 +126,15 @@ Health checks ensure all databases are fully initialized and ready before accept
 
 ## 🤔 Troubleshooting
 
-### Messy Output During Installation
+### Installation Messages
 
-After running the installer, you might see a success message followed by some errors: `Error: Oh My Zsh can't be loaded from: bash...`
+After running the installer, you'll see:
+```
+[SUCCESS] Installation complete!
+[INFO] Restart your terminal or run 'source ~/.zshrc' to use the new commands.
+```
 
-**This is normal and harmless! ✅**
-
-The installation was **successful**. This messy output happens because your main shell (e.g., **Zsh**) is different from the shell used to run the installer (**Bash**). The Bash shell temporarily tried to read your Zsh-specific startup file and printed errors for the commands it didn't understand.
-
-This is a one-time event that only occurs during installation. Simply **restart your terminal**, and you're good to go.
+You may also see some additional output or error messages related to shell configuration. **This is normal!** The installation completed successfully. Just restart your terminal or run the source command shown above.
 
 ### Oracle ARM64 (Apple Silicon) Compatibility
 

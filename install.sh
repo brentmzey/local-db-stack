@@ -32,4 +32,4 @@ sed -i.bak '/# START LOCAL DB STACK/,/# END LOCAL DB STACK/d' "$PROFILE_FILE"
 echo -e "\n$CONFIG_CONTENT" >> "$PROFILE_FILE"
 
 success "Installation complete!"
-info "Restart your terminal or run `source $PROFILE_FILE` to use the new commands."
+info "Restart your terminal or run 'source $PROFILE_FILE' to use the new commands."
