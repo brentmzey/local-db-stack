@@ -1,0 +1,14 @@
+version: '3.8'
+name: local_db_stack
+services:
+  postgres: { image: postgres:latest, container_name: local_postgres, restart: unless-stopped, environment: [ "POSTGRES_USER=${LOCAL_POSTGRES_USER:-user}", "POSTGRES_PASSWORD=${LOCAL_POSTGRES_PASS:-password}", "POSTGRES_DB=${LOCAL_POSTGRES_DB:-localdatabase}" ], ports: [ "${LOCAL_POSTGRES_PORT:-15432}:5432" ], volumes: [ local_postgres_data:/var/lib/postgresql/data ] }
+  mysql: { image: mysql:latest, container_name: local_mysql, restart: unless-stopped, environment: [ "MYSQL_ROOT_PASSWORD=${LOCAL_MYSQL_ROOT_PASS:-rootpassword}", "MYSQL_DATABASE=${LOCAL_MYSQL_DB:-localdatabase}", "MYSQL_USER=${LOCAL_MYSQL_USER:-user}", "MYSQL_PASSWORD=${LOCAL_MYSQL_PASS:-password}" ], ports: [ "${LOCAL_MYSQL_PORT:-13306}:3306" ], volumes: [ local_mysql_data:/var/lib/mysql ] }
+  mongodb: { image: mongo:latest, container_name: local_mongodb, restart: unless-stopped, environment: [ "MONGO_INITDB_ROOT_USERNAME=${LOCAL_MONGO_USER:-root}", "MONGO_INITDB_ROOT_PASSWORD=${LOCAL_MONGO_PASS:-rootpassword}" ], ports: [ "${LOCAL_MONGODB_PORT:-17017}:27017" ], volumes: [ local_mongodb_data:/data/db ] }
+  redis: { image: redis:latest, container_name: local_redis, restart: unless-stopped, command: redis-server --appendonly yes, ports: [ "${LOCAL_REDIS_PORT:-16379}:6379" ], volumes: [ local_redis_data:/data ] }
+  oracle: { image: gvenzl/oracle-xe:latest, container_name: local_oracle_xe, restart: unless-stopped, environment: [ "ORACLE_PASSWORD=${LOCAL_ORACLE_PASS:-password}" ], ports: [ "${LOCAL_ORACLE_PORT:-11521}:1521" ], volumes: [ local_oracle_data:/opt/oracle/oradata ] }
+volumes:
+  local_postgres_data:
+  local_mysql_data:
+  local_mongodb_data:
+  local_redis_data:
+  local_oracle_data:
