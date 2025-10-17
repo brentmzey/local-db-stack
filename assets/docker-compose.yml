@@ -1,14 +1,134 @@
-version: '3.8'
 name: local_db_stack
+
 services:
-  postgres: { image: postgres:latest, container_name: local_postgres, restart: unless-stopped, environment: [ "POSTGRES_USER=${LOCAL_POSTGRES_USER:-user}", "POSTGRES_PASSWORD=${LOCAL_POSTGRES_PASS:-password}", "POSTGRES_DB=${LOCAL_POSTGRES_DB:-localdatabase}" ], ports: [ "${LOCAL_POSTGRES_PORT:-15432}:5432" ], volumes: [ local_postgres_data:/var/lib/postgresql/data ] }
-  mysql: { image: mysql:latest, container_name: local_mysql, restart: unless-stopped, environment: [ "MYSQL_ROOT_PASSWORD=${LOCAL_MYSQL_ROOT_PASS:-rootpassword}", "MYSQL_DATABASE=${LOCAL_MYSQL_DB:-localdatabase}", "MYSQL_USER=${LOCAL_MYSQL_USER:-user}", "MYSQL_PASSWORD=${LOCAL_MYSQL_PASS:-password}" ], ports: [ "${LOCAL_MYSQL_PORT:-13306}:3306" ], volumes: [ local_mysql_data:/var/lib/mysql ] }
-  mongodb: { image: mongo:latest, container_name: local_mongodb, restart: unless-stopped, environment: [ "MONGO_INITDB_ROOT_USERNAME=${LOCAL_MONGO_USER:-root}", "MONGO_INITDB_ROOT_PASSWORD=${LOCAL_MONGO_PASS:-rootpassword}" ], ports: [ "${LOCAL_MONGODB_PORT:-17017}:27017" ], volumes: [ local_mongodb_data:/data/db ] }
-  redis: { image: redis:latest, container_name: local_redis, restart: unless-stopped, command: redis-server --appendonly yes, ports: [ "${LOCAL_REDIS_PORT:-16379}:6379" ], volumes: [ local_redis_data:/data ] }
-  oracle: { image: gvenzl/oracle-xe:latest, container_name: local_oracle_xe, restart: unless-stopped, environment: [ "ORACLE_PASSWORD=${LOCAL_ORACLE_PASS:-password}" ], ports: [ "${LOCAL_ORACLE_PORT:-11521}:1521" ], volumes: [ local_oracle_data:/opt/oracle/oradata ] }
+  postgres:
+    image: postgres:16-alpine
+    container_name: local_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${LOCAL_POSTGRES_USER:-local_user}
+      POSTGRES_PASSWORD: ${LOCAL_POSTGRES_PASS:-local_password}
+      POSTGRES_DB: ${LOCAL_POSTGRES_DB:-local_database}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${LOCAL_POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c fsync=on
+      -c synchronous_commit=on
+      -c full_page_writes=on
+      -c wal_level=replica
+      -c max_wal_senders=3
+      -c wal_keep_size=64
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${LOCAL_POSTGRES_USER:-local_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    shm_size: 128mb
+
+  mysql:
+    image: mysql:8.0
+    container_name: local_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${LOCAL_MYSQL_ROOT_PASS:-local_rootpassword}
+      MYSQL_DATABASE: ${LOCAL_MYSQL_DB:-local_database}
+      MYSQL_USER: ${LOCAL_MYSQL_USER:-local_user}
+      MYSQL_PASSWORD: ${LOCAL_MYSQL_PASS:-local_password}
+    ports:
+      - "${LOCAL_MYSQL_PORT:-13306}:3306"
+    volumes:
+      - local_mysql_data:/var/lib/mysql
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --innodb-flush-log-at-trx-commit=1
+      --innodb-flush-method=O_DIRECT
+      --sync-binlog=1
+      --innodb-doublewrite=ON
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${LOCAL_MYSQL_ROOT_PASS:-local_rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:7
+    container_name: local_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${LOCAL_MONGO_USER:-local_root}
+      MONGO_INITDB_ROOT_PASSWORD: ${LOCAL_MONGO_PASS:-local_rootpassword}
+    ports:
+      - "${LOCAL_MONGODB_PORT:-17017}:27017"
+    volumes:
+      - local_mongodb_data:/data/db
+      - local_mongodb_config:/data/configdb
+    command: >
+      --wiredTigerCacheSizeGB 0.5
+      --wiredTigerJournalCompressor snappy
+      --storageEngine wiredTiger
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: local_redis
+    restart: unless-stopped
+    ports:
+      - "${LOCAL_REDIS_PORT:-16379}:6379"
+    volumes:
+      - local_redis_data:/data
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+      --stop-writes-on-bgsave-error yes
+      --rdbcompression yes
+      --rdbchecksum yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  oracle:
+    image: container-registry.oracle.com/database/free:latest
+    container_name: local_oracle
+    restart: unless-stopped
+    environment:
+      ORACLE_PWD: ${LOCAL_ORACLE_PASS:-local_password}
+      ORACLE_CHARACTERSET: AL32UTF8
+    ports:
+      - "${LOCAL_ORACLE_PORT:-11521}:1521"
+    volumes:
+      - local_oracle_data:/opt/oracle/oradata
+    shm_size: 1gb
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
 volumes:
   local_postgres_data:
+    driver: local
   local_mysql_data:
+    driver: local
   local_mongodb_data:
+    driver: local
+  local_mongodb_config:
+    driver: local
   local_redis_data:
+    driver: local
   local_oracle_data:
+    driver: local
