@@ -124,6 +124,43 @@ Health checks ensure all databases are fully initialized and ready before accept
 
 ---
 
+## 🏗️ Building & Running
+
+### For Developers
+
+If you're developing or modifying this stack, see [`DEVELOPMENT.md`](DEVELOPMENT.md) for detailed build instructions, testing procedures, and platform-specific notes.
+
+### Platform Compatibility
+
+This stack runs on:
+- ✅ **macOS** (Intel and Apple Silicon M1/M2/M3)
+- ✅ **Linux** (x86_64 and ARM64)
+- ✅ **WSL2** (Windows Subsystem for Linux 2)
+
+All database images support multi-platform architectures. On Apple Silicon Macs, Oracle Database runs via emulation and may show a harmless platform warning.
+
+### Quick Local Test
+
+```bash
+# Clone the repository
+git clone https://github.com/brentmzey/local-db-stack.git
+cd local-db-stack
+
+# Start the stack
+docker-compose -f assets/docker-compose.yml --env-file assets/.env.example up -d
+
+# Check status
+docker-compose -f assets/docker-compose.yml --env-file assets/.env.example ps
+
+# Test data persistence
+./test_persistence.sh
+
+# Clean up
+docker-compose -f assets/docker-compose.yml --env-file assets/.env.example down -v
+```
+
+---
+
 ## 🤔 Troubleshooting
 
 ### Installation Messages
@@ -157,10 +194,30 @@ docker volume rm local_postgres_data  # WARNING: This deletes all data for that 
 
 ---
 
+## 📚 Additional Documentation
+
+- **[DATA_CONSISTENCY.md](DATA_CONSISTENCY.md)** - Detailed information about durability settings and data safety guarantees
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Build instructions, testing procedures, and contribution guidelines
+- **[test_persistence.sh](test_persistence.sh)** - Automated test script to verify data persistence
+
+---
+
 ## 🗑️ Uninstalling
 
 1.  Remove the shell configuration by deleting the block between `# START LOCAL DB STACK` and `# END LOCAL DB STACK` from your `~/.zshrc` or `~/.bashrc`.
 2.  Stop and remove all containers and volumes: `localdb-wipe`
 3.  Remove the installation files: `rm -rf ~/.local-db-stack`.
 4.  Restart your terminal.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please see [DEVELOPMENT.md](DEVELOPMENT.md) for guidelines on building, testing, and contributing to this project.
+
+---
+
+## 📄 License
+
+MIT License - See repository for full license text.
 
