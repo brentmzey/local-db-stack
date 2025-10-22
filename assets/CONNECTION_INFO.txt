@@ -1,0 +1,63 @@
+# DATABASE CONNECTION INFORMATION
+# Generated: Wed Oct 22 08:54:26 CDT 2025
+
+All databases are configured for seamless connection from local tools and GUIs.
+
+## PostgreSQL
+Host: localhost
+Port: 15432
+User: local_user
+Password: local_password
+Database: local_database
+
+Connection string: postgresql://local_user:local_password@localhost:15432/local_database
+CLI: psql -h localhost -p 15432 -U local_user -d local_database
+     (password configured in ~/.pgpass - no password prompt needed)
+
+## MySQL
+Host: localhost
+Port: 13306
+User: local_user
+Password: local_password
+Database: local_database
+
+Connection string: mysql://local_user:local_password@localhost:13306/local_database
+CLI: mysql --defaults-group-suffix=-local-db-stack
+     (credentials configured in ~/.my.cnf)
+
+## MongoDB
+Host: localhost
+Port: 17017
+User: local_root
+Password: local_rootpassword
+Auth Database: admin
+
+Connection string: mongodb://local_root:local_rootpassword@localhost:17017/admin?authSource=admin
+CLI: mongosh "mongodb://local_root:local_rootpassword@localhost:17017/admin?authSource=admin"
+
+## Redis
+Host: localhost
+Port: 16379
+No authentication required
+
+CLI: redis-cli -p 16379
+
+## Oracle Database
+Host: localhost
+Port: 11521
+SID: FREE
+User: system
+Password: local_password
+
+Connection string: system/local_password@localhost:11521/FREE
+CLI: sqlplus system/local_password@localhost:11521/FREE
+
+## Data Persistence
+All database data is stored in: /Users/brentzey/.local-db-stack/data
+This location is consistent regardless of where docker-compose is run.
+
+## GUI Applications
+Most database GUI applications (DBeaver, TablePlus, pgAdmin, etc.) can use the
+connection information above. For PostgreSQL, the ~/.pgpass file enables
+password-free connections in psql and many GUI tools.
+

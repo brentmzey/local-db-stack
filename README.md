@@ -1,223 +1,1006 @@
+<div align="center">
+
 # 📦 Local Database Stack
 
-A distributable, namespaced local database environment for macOS, Linux, and WSL2, designed to run without conflicting with other development projects.
+### *The Complete Local Development Database Solution*
 
-Install it once, and manage a suite of common databases (PostgreSQL, MySQL, MongoDB, Redis, Oracle) from anywhere in your terminal using simple commands.
+**A distributable, namespaced database environment for macOS, Linux, and WSL2**  
+*Install once. Run anywhere. Never conflicts with your projects.*
 
-![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20WSL2-lightgrey.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20WSL2-lightgrey.svg)](https://github.com/brentmzey/local-db-stack)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Databases](https://img.shields.io/badge/databases-5-green.svg)](https://github.com/brentmzey/local-db-stack)
+
+*Manage PostgreSQL, MySQL, MongoDB, Redis, and Oracle from anywhere in your terminal with simple commands*
+
+[Installation](#-installation) • [Quick Start](#-usage) • [Features](#-core-features) • [Documentation](#-additional-documentation)
+
+</div>
 
 ---
 
 ## ✨ Core Features
 
-* **Simple Install**: Get started with a single command via Homebrew or `curl`.
-* **Global Commands**: Adds simple shell commands like `localdb-up` and `localdb-down` that work from any directory.
-* **Conflict-Free**: Uses non-standard ports and `LOCAL_` prefixed environment variables to prevent clashes with your other projects.
-* **Self-Contained**: Manages all configuration and data in a dedicated `~/.local-db-stack` directory, keeping your project folders clean.
-* **Data Consistency First**: All databases configured with maximum durability settings (fsync, write-ahead logging, journaling) to ensure zero data loss.
-* **Persistent Storage**: Docker named volumes with automatic health checks ensure reliable state preservation across restarts.
+<table>
+<tr>
+<td width="50%">
+
+### 🚀 **Simple & Global**
+- **One-command install** via curl or Homebrew
+- **Global shell commands** work from any directory
+- **No project pollution** - self-contained in `~/.local-db-stack/`
+
+### 🔒 **Safe & Persistent**
+- **Consistent data location** at `~/.local-db-stack/data/`
+- **Zero data loss** with maximum durability settings
+- **Easy backups** with transparent file system access
+
+</td>
+<td width="50%">
+
+### ⚡ **Fast & Seamless**
+- **Password-free CLI access** via auto-configured files
+- **Health checks** ensure readiness before connections
+- **Conflict-free** with non-standard ports
+
+### 🎯 **Developer-Friendly**
+- **All major databases** in one stack
+- **GUI-ready** connection files
+- **Simple management** with intuitive commands
+
+</td>
+</tr>
+</table>
+
+<details>
+<summary><b>🎁 What Makes This Special?</b></summary>
+
+<br>
+
+Unlike Docker volumes that hide your data in obscure locations, this stack stores everything in a **predictable, accessible location** that persists regardless of where you run docker-compose.
+
+**Before Local DB Stack:**
+```bash
+# Where's my data? 🤷
+docker volume inspect some_volume_name
+# Output: /var/lib/docker/volumes/some_hash/_data
+
+# Password prompts everywhere 😫
+psql -h localhost -U user
+Password for user: ▮
+```
+
+**With Local DB Stack:**
+```bash
+# Data is always here 📍
+ls ~/.local-db-stack/data/postgres
+# Easy to backup, inspect, migrate
+
+# No more passwords! 🎉
+localdb-psql
+# Connects instantly ⚡
+```
+
+</details>
 
 ---
 
 ## ✅ Prerequisites
 
-Before you begin, ensure you have the following installed and running:
-
-* A **POSIX-compliant shell** (like `bash` or `zsh`, which are standard on macOS and most Linux distros).
-* **Docker** and **Docker Compose** (Docker Desktop for Mac/Windows or Docker Engine for Linux).
-* **`curl`** and **`git`**.
+<table>
+<tr>
+<td width="33%"><b>🐚 Shell</b><br>Bash or Zsh<br><i>(standard on macOS/Linux)</i></td>
+<td width="33%"><b>🐳 Docker</b><br>Docker & Docker Compose<br><i>(Desktop or Engine)</i></td>
+<td width="33%"><b>🔧 Tools</b><br>curl & git<br><i>(usually pre-installed)</i></td>
+</tr>
+</table>
 
 ---
 
 ## 🚀 Installation
 
-You only need to do this once.
+### One-Command Setup
 
-### Quick Install (One Command)
-
-Run this command in your terminal (works on macOS, Linux, and WSL2):
+Copy and paste this into your terminal:
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/brentmzey/local-db-stack/main/install.sh)
 ```
 
-### After Installation
+<details>
+<summary><b>What does the installer do?</b></summary>
 
-**You MUST restart your terminal** or run one of these commands to activate the new `localdb-*` commands:
+<br>
+
+1. ✅ Downloads configuration files to `~/.local-db-stack/`
+2. ✅ Creates data directories at `~/.local-db-stack/data/`
+3. ✅ Sets up connection files (`~/.pgpass`, `~/.my.cnf`, etc.)
+4. ✅ Adds shell functions to your `~/.zshrc` or `~/.bashrc`
+5. ✅ Generates connection information file
+
+**Your data and configs stay in one place**, making backups and migrations simple.
+
+</details>
+
+### Activate the Commands
+
+After installation, restart your terminal or run:
 
 ```bash
-# If you use Zsh (default on macOS)
+# For Zsh (default on macOS)
 source ~/.zshrc
 
-# If you use Bash
+# For Bash (common on Linux)
 source ~/.bashrc
 ```
 
-Once your terminal is restarted or sourced, test the installation:
+### Test It Out
 
 ```bash
+# Start all databases
 localdb-up
+
+# Check status (wait ~30 seconds for all to be healthy)
+localdb-status
+
+# Connect to PostgreSQL (no password needed!)
+localdb-psql
+
+# View all connection info
+localdb-connect
 ```
 
 ---
 
-## 🛠️ Usage
+## 🛠️ Command Reference
 
-Once installed, you can manage the database stack from **any directory** in your terminal.
+> **💡 All commands work from any directory in your terminal**
 
-| Command | Description |
-| :--- | :--- |
-| `localdb-up` | Starts all database containers in the background. |
-| `localdb-down` | Stops all database containers. Your data is safe. |
-| `localdb-status`| Checks the status of the running containers. |
-| `localdb-logs [service]` | Tails the logs for a specific service (e.g., `localdb-logs postgres`). |
-| `localdb-edit` | Opens your `.env` config file in your default text editor. |
-| `localdb-wipe` | **Deletes everything!** Stops containers and removes all data volumes. |
+### 🎮 Database Control
+
+<table>
+<tr>
+<th width="30%">Command</th>
+<th width="70%">Description</th>
+</tr>
+<tr>
+<td><code>localdb-up</code></td>
+<td>🚀 Start all database containers in the background</td>
+</tr>
+<tr>
+<td><code>localdb-down</code></td>
+<td>🛑 Stop all database containers (data persists)</td>
+</tr>
+<tr>
+<td><code>localdb-status</code></td>
+<td>📊 Check the status and health of all containers</td>
+</tr>
+<tr>
+<td><code>localdb-logs [service]</code></td>
+<td>📜 Tail logs for a specific service<br><i>Example: <code>localdb-logs postgres</code></i></td>
+</tr>
+<tr>
+<td><code>localdb-wipe</code></td>
+<td>🗑️ <b>⚠️ Deletes everything!</b> Stops containers and removes all data</td>
+</tr>
+</table>
+
+### 🔌 Instant Connections
+
+<table>
+<tr>
+<th width="30%">Command</th>
+<th width="70%">Description</th>
+</tr>
+<tr>
+<td><code>localdb-connect</code></td>
+<td>📋 Display connection info for all databases</td>
+</tr>
+<tr>
+<td><code>localdb-psql</code></td>
+<td>🐘 Connect to PostgreSQL instantly (no password prompt!)</td>
+</tr>
+<tr>
+<td><code>localdb-mysql</code></td>
+<td>🐬 Connect to MySQL instantly (no password prompt!)</td>
+</tr>
+<tr>
+<td><code>localdb-mongo</code></td>
+<td>🍃 Connect to MongoDB with pre-configured credentials</td>
+</tr>
+<tr>
+<td><code>localdb-redis</code></td>
+<td>⚡ Connect to Redis CLI</td>
+</tr>
+</table>
+
+### 🗄️ Data Management
+
+<table>
+<tr>
+<th width="30%">Command</th>
+<th width="70%">Description</th>
+</tr>
+<tr>
+<td><code>localdb-data-dir</code></td>
+<td>📁 Show data directory location and contents</td>
+</tr>
+<tr>
+<td><code>localdb-init</code></td>
+<td>🔧 Initialize/migrate data directories and connection files</td>
+</tr>
+<tr>
+<td><code>localdb-setup-connections</code></td>
+<td>🔐 Regenerate connection configuration files</td>
+</tr>
+<tr>
+<td><code>localdb-edit</code></td>
+<td>✏️ Edit configuration in <code>~/.local-db-stack/.env</code></td>
+</tr>
+</table>
+
+<details>
+<summary><b>💻 Example Usage Session</b></summary>
+
+```bash
+# Start the databases
+localdb-up
+
+# Wait a moment for health checks, then check status
+localdb-status
+# ✓ postgres   healthy
+# ✓ mysql      healthy
+# ✓ mongodb    healthy
+# ✓ redis      healthy
+# ✓ oracle     healthy (may take 1-2 min on first start)
+
+# Connect to PostgreSQL
+localdb-psql
+# local_database=# CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT);
+# local_database=# \q
+
+# View where your data is stored
+localdb-data-dir
+# Data directory: /Users/you/.local-db-stack/data
+# drwxr-xr-x  postgres/
+# drwxr-xr-x  mysql/
+# drwxr-xr-x  mongodb/
+# drwxr-xr-x  redis/
+# drwxr-xr-x  oracle/
+
+# Check PostgreSQL logs
+localdb-logs postgres
+
+# Stop everything (data persists!)
+localdb-down
+
+# Start again - your data is still there!
+localdb-up
+localdb-psql
+# local_database=# SELECT * FROM users;
+```
+
+</details>
 
 ---
 
 ## ⚙️ Configuration
 
-All configuration for ports, usernames, and passwords lives in a single `.env` file located at `~/.local-db-stack/.env`. To edit it, run:
+All settings live in **`~/.local-db-stack/.env`**. Edit it anytime:
 
 ```bash
 localdb-edit
 ```
 
----
+### Default Configuration
 
-## 🔌 Connection & Persistence Details
+```bash
+# Data directory for all database volumes
+LOCAL_DB_DATA_DIR=$HOME/.local-db-stack/data
 
-### Persistent Storage Location
+# PostgreSQL
+LOCAL_POSTGRES_PORT=15432
+LOCAL_POSTGRES_USER=local_user
+LOCAL_POSTGRES_PASS=local_password
+LOCAL_POSTGRES_DB=local_database
 
-This stack uses **Docker Named Volumes** for persistence. This means your data is safely managed by Docker itself, not in a simple folder in your home directory. This is the standard, cross-platform way to ensure data integrity.
+# MySQL
+LOCAL_MYSQL_PORT=13306
+LOCAL_MYSQL_USER=local_user
+LOCAL_MYSQL_PASS=local_password
+LOCAL_MYSQL_DB=local_database
 
-* To see a list of volumes, run: `docker volume ls | grep local_`
-* For advanced users: To find the physical location on your machine where Docker stores a specific volume, you can run `docker volume inspect local_postgres_data`.
+# MongoDB
+LOCAL_MONGODB_PORT=17017
+LOCAL_MONGO_USER=local_root
+LOCAL_MONGO_PASS=local_rootpassword
 
-### Database Connection Info
+# Redis
+LOCAL_REDIS_PORT=16379
 
-Use the following details to connect from your applications or a database client. The values are determined by your configuration in the `.env` file.
+# Oracle
+LOCAL_ORACLE_PORT=11521
+LOCAL_ORACLE_PASS=LocalOraclePass123
+```
 
-| Database | Port (Default) | Connection URI Example |
-| :--- | :--- | :--- |
-| **PostgreSQL** | `15432` | `postgresql://local_user:local_password@localhost:15432/local_database` |
-| **MySQL** | `13306` | `mysql://local_user:local_password@localhost:13306/local_database` |
-| **MongoDB** | `17017` | `mongodb://local_root:local_rootpassword@localhost:17017/` |
-| **Redis** | `16379` | `redis://localhost:16379` |
-| **Oracle** | `11521` | `jdbc:oracle:thin:@//localhost:11521/FREEPDB1` (user: `system`) |
-
----
-
-## 🛡️ Data Consistency Guarantees
-
-All databases are configured with maximum durability settings to ensure **zero data loss** between runs:
-
-* **PostgreSQL**: Full page writes, synchronous commits, fsync enabled, WAL archiving
-* **MySQL**: InnoDB doublewrite buffer, binary logging, sync at transaction commit
-* **MongoDB**: WiredTiger journaling with compression, checkpoint consistency
-* **Redis**: AOF persistence (appendfsync everysec) + RDB snapshots, checksum validation
-* **Oracle**: Standard durability settings with proper shutdown handling
-
-Health checks ensure all databases are fully initialized and ready before accepting connections.
+> **💡 Pro Tip:** After changing ports or credentials, run `localdb-setup-connections` to update your connection files, then restart the databases with `localdb-down && localdb-up`.
 
 ---
 
-## 🏗️ Building & Running
+## 🔌 Database Connections
 
-### For Developers
+### 🎯 Connection At a Glance
 
-If you're developing or modifying this stack, see [`DEVELOPMENT.md`](DEVELOPMENT.md) for detailed build instructions, testing procedures, and platform-specific notes.
+<table>
+<tr>
+<th>Database</th>
+<th>Port</th>
+<th>Quick Connect</th>
+<th>Connection String</th>
+</tr>
+<tr>
+<td>🐘 <b>PostgreSQL</b></td>
+<td><code>15432</code></td>
+<td><code>localdb-psql</code></td>
+<td><code>postgresql://local_user:local_password@localhost:15432/local_database</code></td>
+</tr>
+<tr>
+<td>🐬 <b>MySQL</b></td>
+<td><code>13306</code></td>
+<td><code>localdb-mysql</code></td>
+<td><code>mysql://local_user:local_password@localhost:13306/local_database</code></td>
+</tr>
+<tr>
+<td>🍃 <b>MongoDB</b></td>
+<td><code>17017</code></td>
+<td><code>localdb-mongo</code></td>
+<td><code>mongodb://local_root:local_rootpassword@localhost:17017/admin</code></td>
+</tr>
+<tr>
+<td>⚡ <b>Redis</b></td>
+<td><code>16379</code></td>
+<td><code>localdb-redis</code></td>
+<td><code>redis://localhost:16379</code></td>
+</tr>
+<tr>
+<td>🔶 <b>Oracle</b></td>
+<td><code>11521</code></td>
+<td><i>Use GUI/client</i></td>
+<td><code>localhost:11521/FREEPDB1</code> (user: <code>system</code>)</td>
+</tr>
+</table>
 
-### Platform Compatibility
+### 🚀 Seamless Connectivity Features
 
-This stack runs on:
-- ✅ **macOS** (Intel and Apple Silicon M1/M2/M3)
-- ✅ **Linux** (x86_64 and ARM64)
-- ✅ **WSL2** (Windows Subsystem for Linux 2)
+The installer automatically configures these files for **password-free access**:
 
-All database images support multi-platform architectures. On Apple Silicon Macs, Oracle Database runs via emulation and may show a harmless platform warning.
+<table>
+<tr>
+<th width="25%">File</th>
+<th width="35%">Purpose</th>
+<th width="40%">Benefit</th>
+</tr>
+<tr>
+<td><code>~/.pgpass</code></td>
+<td>PostgreSQL password storage</td>
+<td>✅ <code>psql</code> connects without prompts</td>
+</tr>
+<tr>
+<td><code>~/.my.cnf</code></td>
+<td>MySQL credentials</td>
+<td>✅ <code>mysql</code> connects without prompts</td>
+</tr>
+<tr>
+<td><code>~/.mongorc.js</code></td>
+<td>MongoDB connection helpers</td>
+<td>✅ Quick connection functions</td>
+</tr>
+<tr>
+<td><code>~/.redisclirc</code></td>
+<td>Redis connection notes</td>
+<td>✅ Port configuration reminder</td>
+</tr>
+<tr>
+<td><code>~/.local-db-stack/CONNECTION_INFO.txt</code></td>
+<td>All connection details</td>
+<td>✅ One-stop reference for all DBs</td>
+</tr>
+</table>
+
+<details>
+<summary><b>🔧 Connecting with GUI Tools</b></summary>
+
+<br>
+
+### pgAdmin / Postico / TablePlus (PostgreSQL)
+```
+Host:     localhost
+Port:     15432
+Database: local_database
+Username: local_user
+Password: local_password
+```
+
+### MySQL Workbench / Sequel Pro
+```
+Host:     localhost
+Port:     13306
+Database: local_database
+Username: local_user
+Password: local_password
+```
+
+### MongoDB Compass
+```
+Connection String:
+mongodb://local_root:local_rootpassword@localhost:17017/admin?authSource=admin
+```
+
+### RedisInsight / Another Redis Desktop Manager
+```
+Host: localhost
+Port: 16379
+```
+
+### Oracle SQL Developer / DBeaver
+```
+Host:     localhost
+Port:     11521
+Service:  FREEPDB1
+Username: system
+Password: LocalOraclePass123
+```
+
+**💡 Tip:** Run `localdb-connect` to display these details anytime!
+
+</details>
+
+<details>
+<summary><b>🔐 How Password-Free Access Works</b></summary>
+
+<br>
+
+When you run the installer or `localdb-setup-connections`, it creates secure credential files in your home directory:
+
+**PostgreSQL (~/.pgpass)**
+```
+localhost:15432:*:local_user:local_password
+```
+- Permissions automatically set to `600` (owner read/write only)
+- Standard PostgreSQL credential storage method
+- Works with `psql`, `pg_dump`, and all PostgreSQL tools
+
+**MySQL (~/.my.cnf)**
+```
+[client-local-db-stack]
+host=localhost
+port=13306
+user=local_user
+password=local_password
+database=local_database
+```
+- Group suffix prevents conflicts with other MySQL configs
+- `localdb-mysql` command uses `--defaults-group-suffix=-local-db-stack`
+- Standard MySQL options file format
+
+**MongoDB (~/.mongorc.js)**
+```javascript
+// Helper function automatically available in mongosh
+localDBConnect = function() {
+  return db.getSiblingDB('admin').auth('local_root', 'local_rootpassword');
+}
+```
+
+These files follow industry-standard security practices and are used by professional database administrators worldwide.
+
+</details>
+
+---
+
+## 💾 Data Persistence
+
+### 📍 Where Your Data Lives
+
+```
+~/.local-db-stack/
+├── data/                       # All database data here!
+│   ├── postgres/              # PostgreSQL data
+│   ├── mysql/                 # MySQL data
+│   ├── mongodb/               # MongoDB data
+│   ├── mongodb-config/        # MongoDB config
+│   ├── redis/                 # Redis data
+│   └── oracle/                # Oracle data
+├── .env                       # Configuration
+├── docker-compose.yml         # Database definitions
+└── CONNECTION_INFO.txt        # Connection reference
+```
+
+### ✨ Why This Matters
+
+**Traditional Docker Volumes:**
+```bash
+docker volume inspect my_volume
+# {
+#   "Mountpoint": "/var/lib/docker/volumes/hash/_data"
+# }
+# 😞 Hidden, hard to backup, unclear ownership
+```
+
+**Local DB Stack Bind Mounts:**
+```bash
+ls ~/.local-db-stack/data/
+# postgres/  mysql/  mongodb/  redis/  oracle/
+# 😊 Transparent, easy backups, portable
+```
+
+### 🎁 Benefits
+
+<table>
+<tr>
+<td width="50%">
+
+**🎯 Predictable Location**
+- Same path on every machine
+- Survives docker-compose location changes
+- Easy to find and inspect
+
+**💼 Simple Backups**
+```bash
+# Backup all databases
+tar -czf db-backup.tar.gz \
+  ~/.local-db-stack/data/
+
+# Restore
+tar -xzf db-backup.tar.gz -C ~/
+```
+
+</td>
+<td width="50%">
+
+**🚚 Easy Migration**
+```bash
+# Old machine
+scp -r ~/.local-db-stack/data/ \
+  newmachine:~/
+
+# New machine
+localdb-up  # Just works!
+```
+
+**🔍 Transparent Access**
+- See your data files directly
+- Use standard filesystem tools
+- No Docker volume mysteries
+
+</td>
+</tr>
+</table>
+
+> **📖 Deep Dive:** See [DATA_PERSISTENCE.md](DATA_PERSISTENCE.md) for migration guides, backup strategies, and advanced topics.
+
+---
+
+## 🛡️ Data Consistency & Safety
+
+All databases are configured with **maximum durability settings** to ensure zero data loss:
+
+### Database-Specific Guarantees
+
+<table>
+<tr>
+<td width="50%">
+
+**🐘 PostgreSQL**
+- ✅ Full page writes enabled
+- ✅ Synchronous commits
+- ✅ fsync on every transaction
+- ✅ WAL archiving configured
+- ✅ Checkpoint consistency
+
+**🐬 MySQL**
+- ✅ InnoDB doublewrite buffer
+- ✅ Binary logging enabled
+- ✅ Sync on transaction commit
+- ✅ Crash recovery safe
+
+**🍃 MongoDB**
+- ✅ WiredTiger journaling
+- ✅ Snappy compression
+- ✅ Checkpoint consistency
+- ✅ Durable writes
+
+</td>
+<td width="50%">
+
+**⚡ Redis**
+- ✅ AOF persistence enabled
+- ✅ appendfsync everysec
+- ✅ RDB snapshots
+- ✅ Checksum validation
+- ✅ Write verification
+
+**🔶 Oracle**
+- ✅ Standard durability settings
+- ✅ Redo logging enabled
+- ✅ Proper shutdown handling
+- ✅ Crash recovery
+
+</td>
+</tr>
+</table>
+
+### Health Checks Ensure Readiness
+
+Each database has health checks that verify:
+- ✅ Process is running
+- ✅ Accepting connections
+- ✅ Initialization complete
+- ✅ Ready for queries
+
+```bash
+localdb-status
+# NAME      STATUS    HEALTH
+# postgres  Up 2m     healthy
+# mysql     Up 2m     healthy
+# mongodb   Up 2m     healthy
+# redis     Up 2m     healthy
+# oracle    Up 2m     healthy (takes 1-2 min on first start)
+```
+
+> **📖 Technical Details:** See [DATA_CONSISTENCY.md](DATA_CONSISTENCY.md) for configuration details and durability guarantees.
+
+---
+
+## 🏗️ Platform Compatibility
+
+<table>
+<tr>
+<th width="25%">Platform</th>
+<th width="25%">Status</th>
+<th width="50%">Notes</th>
+</tr>
+<tr>
+<td>🍎 <b>macOS</b></td>
+<td>✅ Fully Supported</td>
+<td>Intel and Apple Silicon (M1/M2/M3)</td>
+</tr>
+<tr>
+<td>🐧 <b>Linux</b></td>
+<td>✅ Fully Supported</td>
+<td>x86_64 and ARM64</td>
+</tr>
+<tr>
+<td>🪟 <b>WSL2</b></td>
+<td>✅ Fully Supported</td>
+<td>Windows Subsystem for Linux 2</td>
+</tr>
+</table>
+
+All database images support multi-platform architectures. Oracle Database uses the official Oracle Free image with native ARM64 support.
 
 ### Quick Local Test
+
+Want to try before installing globally? Test locally:
 
 ```bash
 # Clone the repository
 git clone https://github.com/brentmzey/local-db-stack.git
 cd local-db-stack
 
-# Start the stack
-docker-compose -f assets/docker-compose.yml --env-file assets/.env.example up -d
+# Start all databases
+cd assets
+docker-compose up -d
 
 # Check status
-docker-compose -f assets/docker-compose.yml --env-file assets/.env.example ps
+docker-compose ps
 
-# Test data persistence
+# Test persistence
+cd ..
 ./test_persistence.sh
 
 # Clean up
-docker-compose -f assets/docker-compose.yml --env-file assets/.env.example down -v
+cd assets
+docker-compose down -v
 ```
 
 ---
 
 ## 🤔 Troubleshooting
 
-### Installation Messages
+### Common Issues
 
-After running the installer, you'll see:
+<details>
+<summary><b>❓ Installation completed but commands don't work</b></summary>
+
+<br>
+
+**Problem:** After running the installer, `localdb-up` command not found.
+
+**Solution:**
+```bash
+# You must restart your terminal OR run:
+source ~/.zshrc    # for Zsh
+source ~/.bashrc   # for Bash
+
+# Then try again:
+localdb-up
 ```
-[SUCCESS] Installation complete!
-[INFO] Restart your terminal or run 'source ~/.zshrc' to use the new commands.
+
+The installation adds commands to your shell config, which only loads on terminal startup.
+
+</details>
+
+<details>
+<summary><b>❓ Database won't start or shows as unhealthy</b></summary>
+
+<br>
+
+**Check the logs:**
+```bash
+localdb-logs postgres  # or mysql, mongodb, redis, oracle
 ```
 
-You may also see some additional output or error messages related to shell configuration. **This is normal!** The installation completed successfully. Just restart your terminal or run the source command shown above.
+**Common causes:**
+1. **Port already in use** - Check if another service is using the port
+   ```bash
+   lsof -i :15432  # Check PostgreSQL port
+   ```
+   Solution: Edit `~/.local-db-stack/.env` to use a different port
 
-### Oracle ARM64 (Apple Silicon) Compatibility
+2. **Insufficient memory** - Databases need adequate resources
+   - PostgreSQL: ~256MB
+   - MySQL: ~512MB
+   - MongoDB: ~512MB
+   - Oracle: ~2GB (first start may take 1-2 minutes)
 
-This stack now uses the official Oracle Database Free image (`container-registry.oracle.com/database/free:latest`) which supports both Intel (amd64) and Apple Silicon (arm64) platforms natively. No emulation warnings should appear.
+3. **Corrupted data** - Rare, but possible after system crash
+   ```bash
+   # Backup first if data is important
+   mv ~/.local-db-stack/data/postgres ~/.local-db-stack/data/postgres.backup
+   
+   # Create fresh directory
+   mkdir ~/.local-db-stack/data/postgres
+   
+   # Restart
+   localdb-down
+   localdb-up
+   ```
 
-**Note**: Oracle takes 1-2 minutes to initialize on first startup. Use `localdb-logs oracle` to monitor progress.
+</details>
 
-### Database Won't Start After System Crash
+<details>
+<summary><b>❓ Oracle takes forever to start</b></summary>
 
-If a database fails to start after an unexpected shutdown:
+<br>
+
+**This is normal!** Oracle Database initialization takes 1-2 minutes on first startup.
 
 ```bash
-# Check the logs for the specific service
-localdb-logs postgres  # or mysql, mongodb, redis, oracle
+# Monitor progress:
+localdb-logs oracle
 
-# If data corruption is suspected (rare with our durability settings)
-# you may need to remove and recreate that specific volume
-docker volume rm local_postgres_data  # WARNING: This deletes all data for that DB
+# Wait for this message:
+# "DATABASE IS READY TO USE!"
+
+# Then check status:
+localdb-status
+# oracle  Up 2m  healthy
 ```
+
+On subsequent starts, Oracle starts much faster (~10-20 seconds).
+
+</details>
+
+<details>
+<summary><b>❓ Can't connect with GUI tool</b></summary>
+
+<br>
+
+**Verify databases are running:**
+```bash
+localdb-status
+# All should show "healthy"
+```
+
+**Get connection details:**
+```bash
+localdb-connect
+```
+
+**Common mistakes:**
+- ❌ Using standard ports (3306, 5432, etc.)  
+  ✅ Use the custom ports (13306, 15432, etc.)
+  
+- ❌ Wrong credentials  
+  ✅ Check `~/.local-db-stack/.env` for current values
+
+- ❌ Connecting to wrong host  
+  ✅ Always use `localhost` or `127.0.0.1`
+
+**Test from command line first:**
+```bash
+localdb-psql   # PostgreSQL
+localdb-mysql  # MySQL
+localdb-mongo  # MongoDB
+localdb-redis  # Redis
+```
+
+</details>
+
+<details>
+<summary><b>❓ How do I change passwords or ports?</b></summary>
+
+<br>
+
+```bash
+# 1. Edit configuration
+localdb-edit
+
+# 2. Make your changes (save and exit)
+
+# 3. Regenerate connection files
+localdb-setup-connections
+
+# 4. Restart databases
+localdb-down
+localdb-up
+
+# 5. Test connection
+localdb-connect
+```
+
+**Note:** Changing passwords doesn't affect existing data, but you may need to update the database's internal users depending on what you change.
+
+</details>
+
+<details>
+<summary><b>❓ Where exactly is my data stored?</b></summary>
+
+<br>
+
+```bash
+# View data directory
+localdb-data-dir
+
+# Direct path:
+ls -lh ~/.local-db-stack/data/
+# postgres/
+# mysql/
+# mongodb/
+# redis/
+# oracle/
+
+# Each folder contains that database's data files
+```
+
+This location is **consistent** regardless of where you run docker-compose from.
+
+</details>
+
+### Getting More Help
+
+1. **Check logs:** `localdb-logs [service-name]`
+2. **Verify Docker:** `docker ps` (should show containers if running)
+3. **Review docs:** 
+   - [DATA_PERSISTENCE.md](DATA_PERSISTENCE.md) - Data storage and backups
+   - [SEAMLESS_CONNECTIVITY.md](SEAMLESS_CONNECTIVITY.md) - Connection guides
+   - [DATA_CONSISTENCY.md](DATA_CONSISTENCY.md) - Durability settings
+   - [DEVELOPMENT.md](DEVELOPMENT.md) - Development and testing
 
 ---
 
 ## 📚 Additional Documentation
 
-- **[DATA_CONSISTENCY.md](DATA_CONSISTENCY.md)** - Detailed information about durability settings and data safety guarantees
-- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Build instructions, testing procedures, and contribution guidelines
-- **[test_persistence.sh](test_persistence.sh)** - Automated test script to verify data persistence
+<table>
+<tr>
+<td width="50%">
+
+### 📖 User Guides
+
+**[DATA_PERSISTENCE.md](DATA_PERSISTENCE.md)**
+- Data storage architecture
+- Backup and restore procedures
+- Migration from Docker volumes
+- Cross-platform compatibility
+
+**[SEAMLESS_CONNECTIVITY.md](SEAMLESS_CONNECTIVITY.md)**
+- Password-free setup explained
+- GUI tool configurations
+- Connection troubleshooting
+- Security best practices
+
+</td>
+<td width="50%">
+
+### 🔧 Technical Docs
+
+**[DATA_CONSISTENCY.md](DATA_CONSISTENCY.md)**
+- Durability settings for each DB
+- Transaction safety guarantees
+- Recovery procedures
+- Performance considerations
+
+**[DEVELOPMENT.md](DEVELOPMENT.md)**
+- Build instructions
+- Testing procedures
+- Contributing guidelines
+- Architecture overview
+
+</td>
+</tr>
+</table>
 
 ---
 
 ## 🗑️ Uninstalling
 
-1.  Remove the shell configuration by deleting the block between `# START LOCAL DB STACK` and `# END LOCAL DB STACK` from your `~/.zshrc` or `~/.bashrc`.
-2.  Stop and remove all containers and volumes: `localdb-wipe`
-3.  Remove the installation files: `rm -rf ~/.local-db-stack`.
-4.  Restart your terminal.
+If you need to remove Local DB Stack:
+
+### Complete Removal
+
+```bash
+# 1. Stop and remove all containers and data
+localdb-wipe
+
+# 2. Remove installation files
+rm -rf ~/.local-db-stack
+
+# 3. Remove connection files (optional)
+rm ~/.pgpass
+rm ~/.my.cnf
+rm ~/.mongorc.js
+rm ~/.redisclirc
+
+# 4. Remove shell configuration
+# Edit ~/.zshrc or ~/.bashrc and delete lines between:
+# # START LOCAL DB STACK
+# ...
+# # END LOCAL DB STACK
+
+# 5. Restart terminal
+```
+
+### Keeping Data for Later
+
+If you want to keep your data but remove the commands:
+
+```bash
+# 1. Stop containers (keeps data)
+localdb-down
+
+# 2. Keep: ~/.local-db-stack/data/
+# 3. Remove shell config (step 4 above)
+# 4. Restart terminal
+```
+
+Later, you can reinstall and your data will still be there!
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please see [DEVELOPMENT.md](DEVELOPMENT.md) for guidelines on building, testing, and contributing to this project.
+Contributions are welcome! We appreciate:
+
+- 🐛 Bug reports and fixes
+- 📖 Documentation improvements
+- ✨ New features and enhancements
+- 🧪 Additional tests
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for guidelines on building, testing, and contributing to this project.
 
 ---
 
 ## 📄 License
 
 MIT License - See repository for full license text.
+
+---
+
+<div align="center">
+
+**Made with ❤️ for developers who need reliable local databases**
+
+[⬆ Back to Top](#-local-database-stack)
+
+</div>
 

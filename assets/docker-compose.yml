@@ -13,7 +13,7 @@ services:
     ports:
       - "${LOCAL_POSTGRES_PORT:-15432}:5432"
     volumes:
-      - local_postgres_data:/var/lib/postgresql/data
+      - ${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}/postgres:/var/lib/postgresql/data
     command: >
       postgres
       -c fsync=on
@@ -23,7 +23,7 @@ services:
       -c max_wal_senders=3
       -c wal_keep_size=64
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${LOCAL_POSTGRES_USER:-local_user}"]
+      test: ["CMD-SHELL", "pg_isready -U ${LOCAL_POSTGRES_USER:-local_user} -d ${LOCAL_POSTGRES_DB:-local_database}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -41,7 +41,7 @@ services:
     ports:
       - "${LOCAL_MYSQL_PORT:-13306}:3306"
     volumes:
-      - local_mysql_data:/var/lib/mysql
+      - ${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}/mysql:/var/lib/mysql
     command: >
       --default-authentication-plugin=mysql_native_password
       --innodb-flush-log-at-trx-commit=1
@@ -64,8 +64,8 @@ services:
     ports:
       - "${LOCAL_MONGODB_PORT:-17017}:27017"
     volumes:
-      - local_mongodb_data:/data/db
-      - local_mongodb_config:/data/configdb
+      - ${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}/mongodb:/data/db
+      - ${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}/mongodb-config:/data/configdb
     command: >
       --wiredTigerCacheSizeGB 0.5
       --wiredTigerJournalCompressor snappy
@@ -83,7 +83,7 @@ services:
     ports:
       - "${LOCAL_REDIS_PORT:-16379}:6379"
     volumes:
-      - local_redis_data:/data
+      - ${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}/redis:/data
     command: >
       redis-server
       --appendonly yes
@@ -110,7 +110,7 @@ services:
     ports:
       - "${LOCAL_ORACLE_PORT:-11521}:1521"
     volumes:
-      - local_oracle_data:/opt/oracle/oradata
+      - ${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}/oracle:/opt/oracle/oradata
     shm_size: 1gb
     healthcheck:
       test: ["CMD-SHELL", "healthcheck.sh || exit 1"]
@@ -119,16 +119,5 @@ services:
       retries: 10
       start_period: 120s
 
-volumes:
-  local_postgres_data:
-    driver: local
-  local_mysql_data:
-    driver: local
-  local_mongodb_data:
-    driver: local
-  local_mongodb_config:
-    driver: local
-  local_redis_data:
-    driver: local
-  local_oracle_data:
-    driver: local
+# Volumes now use bind mounts to ${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}
+# This ensures data persists in a known location regardless of where docker-compose is run
