@@ -85,7 +85,7 @@ docker-compose -f assets/docker-compose.yml --env-file assets/.env.example down 
 ✅ Linux (x86_64 & ARM64)  
 ✅ WSL2
 
-**Note:** Oracle may show platform warning on Apple Silicon - this is harmless.
+**Note:** The `docker-compose.yml` has been updated to explicitly set `platform: linux/amd64` for Oracle on ARM-based machines. If you still see platform warnings, the container should generally function correctly.
 
 ## Troubleshooting
 

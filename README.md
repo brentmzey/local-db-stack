@@ -676,7 +676,7 @@ localdb-status
 </tr>
 </table>
 
-All database images support multi-platform architectures. Oracle Database uses the official Oracle Free image with native ARM64 support.
+All database images support multi-platform architectures. Note: On ARM-based machines (like Apple Silicon), the Oracle Database image requires explicit `platform: linux/amd64` in `docker-compose.yml` to run correctly.
 
 ### Quick Local Test
 

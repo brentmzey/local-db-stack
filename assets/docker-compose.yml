@@ -104,6 +104,7 @@ services:
     image: container-registry.oracle.com/database/free:latest
     container_name: local_oracle
     restart: unless-stopped
+    platform: linux/amd64
     environment:
       ORACLE_PWD: ${LOCAL_ORACLE_PASS:-local_password}
       ORACLE_CHARACTERSET: AL32UTF8

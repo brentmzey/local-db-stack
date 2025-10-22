@@ -54,7 +54,21 @@ volumes:
 - ✅ Easy GUI application setup
 - ✅ Connection details always available
 
-### 4. New Scripts
+### 4. Fixed Oracle Platform Compatibility ✅
+
+**Problem:** Oracle container failed to start on ARM-based machines (e.g., Apple Silicon) due to platform mismatch.
+
+**Solution:** Added `platform: linux/amd64` to the Oracle service definition in `assets/docker-compose.yml` to explicitly specify the image architecture.
+
+```yaml
+  oracle:
+    image: container-registry.oracle.com/database/free:latest
+    platform: linux/amd64 # Explicitly set platform for ARM compatibility
+    container_name: local_oracle
+    # ... other configurations
+```
+
+### 5. New Scripts
 
 **`init-data-dirs.sh`**
 - Creates data directory structure
@@ -68,7 +82,7 @@ volumes:
 - Sets secure file permissions
 - Idempotent (safe to run multiple times)
 
-### 5. Enhanced Shell Commands
+### 6. Enhanced Shell Commands
 
 **New Commands:**
 ```bash
@@ -86,14 +100,14 @@ localdb-setup-connections    # Regenerate connection files
 - All commands now support the `LOCAL_DB_DATA_DIR` environment variable
 - Improved formatting and readability
 
-### 6. Updated Installation Process
+### 7. Updated Installation Process
 
 **Enhanced `install.sh`:**
 - Downloads new scripts (`setup-connection-files.sh`, `init-data-dirs.sh`)
 - Automatically runs initialization and connection setup
 - Shows helpful command list after installation
 
-### 7. Comprehensive Documentation
+### 8. Comprehensive Documentation
 
 **New Documents:**
 - `DATA_PERSISTENCE.md` - Complete guide to data storage, backup, migration
