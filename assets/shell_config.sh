@@ -2,6 +2,49 @@
 export LOCAL_DB_STACK_DIR="$HOME/.local-db-stack"
 export LOCAL_DB_DATA_DIR="${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}"
 
+localdb-help() {
+    cat << 'EOF'
+Local DB Stack - CLI Commands
+==============================
+
+Core Commands:
+  localdb-help              Show this help message
+  localdb-init              Initialize data directories and connection files
+  localdb-up                Start all database containers
+  localdb-down              Stop all database containers
+  localdb-status            Show status of all containers
+  localdb-logs [service]    Show logs (optionally for specific service)
+  localdb-wipe              Stop containers and remove volumes (alias for localdb-down -v)
+
+Configuration:
+  localdb-edit              Edit environment variables (.env file)
+  localdb-connect           Display connection information for all databases
+  localdb-data-dir          Show data directory location and contents
+
+Database Client Helpers:
+  localdb-psql [args]       Connect to PostgreSQL with psql
+  localdb-mysql [args]      Connect to MySQL with mysql client
+  localdb-mongo [args]      Connect to MongoDB with mongosh
+  localdb-redis [args]      Connect to Redis with redis-cli
+
+Available Services:
+  - postgres (port ${LOCAL_POSTGRES_PORT:-15432})
+  - mysql (port ${LOCAL_MYSQL_PORT:-13306})
+  - mongodb (port ${LOCAL_MONGODB_PORT:-17017})
+  - redis (port ${LOCAL_REDIS_PORT:-16379})
+  - oracle (port ${LOCAL_ORACLE_PORT:-11521})
+
+Examples:
+  localdb-up                Start all databases
+  localdb-logs postgres     View PostgreSQL logs
+  localdb-psql              Connect to PostgreSQL
+  localdb-down -v           Stop and wipe all data
+
+Configuration file: $LOCAL_DB_STACK_DIR/.env
+Data directory: $LOCAL_DB_DATA_DIR
+EOF
+}
+
 localdb-up() { 
     docker-compose --project-directory "$LOCAL_DB_STACK_DIR" -f "$LOCAL_DB_STACK_DIR/docker-compose.yml" up -d
 }

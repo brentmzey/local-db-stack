@@ -240,36 +240,70 @@ localdb-connect
 </table>
 
 <details>
-<summary><b>💻 Example Usage Session</b></summary>
+<summary><b>💻 Complete Getting Started Workflow</b></summary>
+
+### Step 1: Start Your Databases
 
 ```bash
-# Start the databases
+# Start all databases
 localdb-up
 
-# Wait a moment for health checks, then check status
+# Wait ~30 seconds, then check status
 localdb-status
-# ✓ postgres   healthy
-# ✓ mysql      healthy
-# ✓ mongodb    healthy
-# ✓ redis      healthy
-# ✓ oracle     healthy (may take 1-2 min on first start)
+# NAME             STATUS              HEALTH
+# local_postgres   Up 30 seconds       healthy
+# local_mysql      Up 30 seconds       healthy
+# local_mongodb    Up 30 seconds       healthy
+# local_redis      Up 30 seconds       healthy
+# local_oracle     Up 30 seconds       healthy (takes 1-2 min first time)
+```
 
-# Connect to PostgreSQL
+### Step 2: Generate Connection Credentials
+
+```bash
+# Create connection files and display info
+localdb-setup-connections
+
+# View connection details anytime
+localdb-connect
+# Displays all connection strings, ports, and credentials
+```
+
+### Step 3: Connect with CLI (Password-Free!)
+
+```bash
+# PostgreSQL
 localdb-psql
 # local_database=# CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT);
 # local_database=# \q
 
+# MySQL
+localdb-mysql
+# mysql> SHOW DATABASES;
+# mysql> EXIT;
+
+# MongoDB
+localdb-mongo
+# test> db.version()
+
+# Redis
+localdb-redis
+# 127.0.0.1:16379> PING
+```
+
+### Step 4: Connect with GUI Tools
+
+Open your preferred database tool and use the credentials from `localdb-connect`:
+
+**DBeaver, pgAdmin, MongoDB Compass, etc.** - See the "Connecting with GUI Tools" section below for detailed setup instructions.
+
+### Step 5: Verify Data Persistence
+
+```bash
 # View where your data is stored
 localdb-data-dir
 # Data directory: /Users/you/.local-db-stack/data
-# drwxr-xr-x  postgres/
-# drwxr-xr-x  mysql/
-# drwxr-xr-x  mongodb/
-# drwxr-xr-x  redis/
-# drwxr-xr-x  oracle/
-
-# Check PostgreSQL logs
-localdb-logs postgres
+# postgres/  mysql/  mongodb/  redis/  oracle/
 
 # Stop everything (data persists!)
 localdb-down
@@ -277,7 +311,7 @@ localdb-down
 # Start again - your data is still there!
 localdb-up
 localdb-psql
-# local_database=# SELECT * FROM users;
+# local_database=# SELECT * FROM users;  ✓ Your data persists!
 ```
 
 </details>
@@ -408,11 +442,71 @@ The installer automatically configures these files for **password-free access**:
 </table>
 
 <details>
-<summary><b>🔧 Connecting with GUI Tools</b></summary>
+<summary><b>🔧 Connecting with GUI Tools (DBeaver, Compass, etc.)</b></summary>
 
 <br>
 
-### pgAdmin / Postico / TablePlus (PostgreSQL)
+After starting your databases with `localdb-up`, you can connect using any GUI tool. First, generate your connection credentials:
+
+```bash
+localdb-setup-connections
+```
+
+This creates `~/.local-db-stack/CONNECTION_INFO.txt` with all your connection details. Now configure your GUI tools:
+
+### DBeaver (Universal SQL Client)
+
+**PostgreSQL Connection:**
+1. Create New Connection → PostgreSQL
+2. Configure:
+   ```
+   Host:     localhost
+   Port:     15432
+   Database: local_database
+   Username: local_user
+   Password: local_password
+   ```
+3. Test Connection → Finish
+
+**MySQL Connection:**
+1. Create New Connection → MySQL
+2. Configure:
+   ```
+   Host:     localhost
+   Port:     13306
+   Database: local_database
+   Username: local_user
+   Password: local_password
+   ```
+3. Test Connection → Finish
+
+**Oracle Connection:**
+1. Create New Connection → Oracle
+2. Configure:
+   ```
+   Host:        localhost
+   Port:        11521
+   Database:    FREEPDB1
+   Service name: FREEPDB1
+   Username:    system
+   Password:    LocalOraclePass123
+   ```
+3. Test Connection → Finish
+   
+   > **Note:** Oracle takes 1-2 minutes on first startup. Check `localdb-status` before connecting.
+
+### MongoDB Compass
+
+1. Click "New Connection"
+2. Paste the connection string:
+   ```
+   mongodb://local_root:local_rootpassword@localhost:17017/admin?authSource=admin
+   ```
+3. Click "Connect"
+
+### PostgreSQL-Specific Tools
+
+**pgAdmin / Postico / TablePlus:**
 ```
 Host:     localhost
 Port:     15432
@@ -421,7 +515,9 @@ Username: local_user
 Password: local_password
 ```
 
-### MySQL Workbench / Sequel Pro
+### MySQL-Specific Tools
+
+**MySQL Workbench / Sequel Ace:**
 ```
 Host:     localhost
 Port:     13306
@@ -430,28 +526,31 @@ Username: local_user
 Password: local_password
 ```
 
-### MongoDB Compass
-```
-Connection String:
-mongodb://local_root:local_rootpassword@localhost:17017/admin?authSource=admin
-```
+### Redis Tools
 
-### RedisInsight / Another Redis Desktop Manager
+**RedisInsight / Another Redis Desktop Manager:**
 ```
 Host: localhost
 Port: 16379
+Name: Local DB Stack (optional)
+```
+No password required.
+
+### Quick CLI Connections
+
+For command-line access without entering passwords:
+
+```bash
+localdb-psql      # PostgreSQL
+localdb-mysql     # MySQL
+localdb-mongo     # MongoDB
+localdb-redis     # Redis
 ```
 
-### Oracle SQL Developer / DBeaver
-```
-Host:     localhost
-Port:     11521
-Service:  FREEPDB1
-Username: system
-Password: LocalOraclePass123
-```
-
-**💡 Tip:** Run `localdb-connect` to display these details anytime!
+**💡 Pro Tips:**
+- Run `localdb-connect` anytime to display all connection details
+- Run `localdb-status` to verify all databases are healthy before connecting
+- Connection info is always available in `~/.local-db-stack/CONNECTION_INFO.txt`
 
 </details>
 
