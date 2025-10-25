@@ -7,6 +7,8 @@ bash <(curl -s https://raw.githubusercontent.com/brentmzey/local-db-stack/main/i
 # Restart terminal after installation
 ```
 
+**Note:** The installer attempts to install database **client tools** (like `psql`, `redis-cli`) which are used to connect to the databases. The actual database **servers** run in Docker containers via `localdb-up`.
+
 ## Commands
 
 | Command | Description |
@@ -92,6 +94,19 @@ docker-compose -f assets/docker-compose.yml --env-file assets/.env.example down 
 **Note:** The `docker-compose.yml` has been updated to explicitly set `platform: linux/amd64` for Oracle on ARM-based machines. If you still see platform warnings, the container should generally function correctly.
 
 ## Troubleshooting
+
+**Commands don't work after installation:**
+```bash
+# Reload your shell configuration
+source ~/.zshrc    # macOS/Zsh
+source ~/.bashrc   # Linux/Bash
+```
+
+**Client vs Server Confusion:**
+- **Servers** = Database instances running in Docker (via `localdb-up`)
+- **Clients** = Tools like `psql`, `mysql` to connect TO servers
+- You DON'T need to install PostgreSQL, MySQL servers separately
+- You only need client tools (installer tries to install these)
 
 **Containers won't start:**
 ```bash

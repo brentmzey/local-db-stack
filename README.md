@@ -112,13 +112,16 @@ bash <(curl -s https://raw.githubusercontent.com/brentmzey/local-db-stack/main/i
 
 <br>
 
-1. ✅ Downloads configuration files to `~/.local-db-stack/`
-2. ✅ Creates data directories at `~/.local-db-stack/data/`
-3. ✅ Sets up connection files (`~/.pgpass`, `~/.my.cnf`, etc.)
-4. ✅ Adds shell functions to your `~/.zshrc` or `~/.bashrc`
-5. ✅ Generates connection information file
+1. ✅ Attempts to install database client tools (`psql`, `redis-cli`, etc.)
+2. ✅ Downloads configuration files to `~/.local-db-stack/`
+3. ✅ Creates data directories at `~/.local-db-stack/data/`
+4. ✅ Sets up connection files (`~/.pgpass`, `~/.my.cnf`, etc.)
+5. ✅ Adds shell functions to your `~/.zshrc` or `~/.bashrc`
+6. ✅ Generates connection information file
 
 **Your data and configs stay in one place**, making backups and migrations simple.
+
+**Note:** The installer installs client tools (like `psql`), NOT database servers. The database servers run in Docker containers when you use `localdb-up`.
 
 </details>
 
@@ -857,6 +860,47 @@ docker-compose down -v
 ## 🤔 Troubleshooting
 
 ### Common Issues
+
+<details>
+<summary><b>❓ Understanding Client Tools vs Database Servers</b></summary>
+
+<br>
+
+**Confused about installing PostgreSQL, MySQL, etc.?** Here's the distinction:
+
+**Database SERVER (provided by Local DB Stack)**
+- The actual database that stores your data
+- Runs in Docker containers on custom ports (15432, 13306, etc.)
+- You DON'T need to install EDB Postgres, MySQL server, etc.
+- Already running when you use `localdb-up`
+
+**Database CLIENT (you may need to install)**
+- Command-line tools like `psql`, `mysql`, `mongosh`, `redis-cli`
+- Used to connect TO servers (local or remote)
+- These are just tools, like a web browser for databases
+
+**Example Setup:**
+```bash
+# Install ONLY the client tools (not servers)
+brew install libpq          # PostgreSQL client (psql)
+brew install mysql-client   # MySQL client (optional - mysql command)
+brew install mongosh        # MongoDB shell (optional)
+brew install redis          # Redis client (optional)
+
+# The installer tries to install these automatically,
+# but you can install them manually if needed
+
+# Start the database SERVERS (in Docker)
+localdb-up
+
+# Connect using CLIENT tools to SERVERS in Docker
+localdb-psql    # Connects to Postgres container at port 15432
+localdb-mysql   # Connects to MySQL container at port 13306
+```
+
+**Key Point:** You're NOT installing competing database servers. The servers run in Docker. You only need the client tools to talk to them.
+
+</details>
 
 <details>
 <summary><b>❓ Installation completed but commands don't work</b></summary>
