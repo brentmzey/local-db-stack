@@ -151,7 +151,33 @@ localdb-psql
 
 # View all connection info
 localdb-connect
+
+# Run end-to-end connectivity test (optional)
+./test_connectivity.sh
 ```
+
+<details>
+<summary><b>🔬 Testing End-to-End Connectivity</b></summary>
+
+<br>
+
+To verify that applications can connect to all databases from anywhere, run the connectivity test:
+
+```bash
+cd /path/to/local-db-stack
+./test_connectivity.sh
+```
+
+This test verifies:
+1. ✅ All containers are healthy
+2. ✅ Direct client connections work (psql, mysql, mongosh, redis-cli)
+3. ✅ External port connectivity works (application access)
+4. ✅ Data operations work (write and read)
+5. ✅ Connection strings are valid
+
+The test provides connection strings for your applications to use.
+
+</details>
 
 ---
 

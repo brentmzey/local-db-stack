@@ -74,6 +74,9 @@ docker-compose -f assets/docker-compose.yml --env-file assets/.env.example up -d
 # Run persistence tests
 ./test_persistence.sh
 
+# Run connectivity tests
+./test_connectivity.sh
+
 # Clean up
 docker-compose -f assets/docker-compose.yml --env-file assets/.env.example down -v
 ```

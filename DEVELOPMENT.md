@@ -30,9 +30,26 @@ docker-compose -f assets/docker-compose.yml --env-file assets/.env.example ps
 # Run persistence tests
 ./test_persistence.sh
 
+# Run end-to-end connectivity tests
+./test_connectivity.sh
+
 # Stop and clean up
 docker-compose -f assets/docker-compose.yml --env-file assets/.env.example down -v
 ```
+
+### Available Test Scripts
+
+**`test_persistence.sh`** - Tests data persistence across container restarts
+- Verifies data survives restart for all databases
+- Tests write and read operations
+- Confirms bind mount configuration
+
+**`test_connectivity.sh`** - Tests end-to-end connectivity for applications
+- Verifies all containers are healthy
+- Tests direct client connections
+- Tests external port access (application integration)
+- Tests data operations
+- Provides connection strings for applications
 
 ### Next Steps / TODO
 
