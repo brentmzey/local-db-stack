@@ -20,13 +20,17 @@ bash <(curl -s https://raw.githubusercontent.com/brentmzey/local-db-stack/main/i
 
 ## Connection Info
 
-| Database | Port | URI Template |
-|----------|------|--------------|
-| **PostgreSQL** | 15432 | `postgresql://local_user:local_password@localhost:15432/local_database` |
-| **MySQL** | 13306 | `mysql://local_user:local_password@localhost:13306/local_database` |
-| **MongoDB** | 17017 | `mongodb://local_root:local_rootpassword@localhost:17017/` |
-| **Redis** | 16379 | `redis://localhost:16379` |
-| **Oracle** | 11521 | `jdbc:oracle:thin:@//localhost:11521/FREEPDB1` (user: system) |
+**🔌 All ports use a "1" prefix** to avoid conflicts with standard ports and integration tests.
+
+| Database | Port | Standard Port | URI Template |
+|----------|------|---------------|--------------|
+| **PostgreSQL** | 15432 | 5432 | `postgresql://local_user:local_password@localhost:15432/local_database` |
+| **MySQL** | 13306 | 3306 | `mysql://local_user:local_password@localhost:13306/local_database` |
+| **MongoDB** | 17017 | 27017 | `mongodb://local_root:local_rootpassword@localhost:17017/` |
+| **Redis** | 16379 | 6379 | `redis://localhost:16379` |
+| **Oracle** | 11521 | 1521 | `jdbc:oracle:thin:@//localhost:11521/FREEPDB1` (user: system) |
+
+> To customize ports, run `localdb-edit`, change the port values, then restart with `localdb-down && localdb-up`
 
 ## Quick Tests
 

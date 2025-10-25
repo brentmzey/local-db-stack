@@ -326,6 +326,56 @@ All settings live in **`~/.local-db-stack/.env`**. Edit it anytime:
 localdb-edit
 ```
 
+### 🔌 Port Configuration
+
+**All ports use a "1" prefix to avoid conflicts** with standard database ports and integration tests running on your machine.
+
+| Database   | Standard Port | Local DB Stack Port | Customizable |
+|------------|--------------|---------------------|--------------|
+| PostgreSQL | 5432         | **15432**          | ✅ Yes       |
+| MySQL      | 3306         | **13306**          | ✅ Yes       |
+| MongoDB    | 27017        | **17017**          | ✅ Yes       |
+| Redis      | 6379         | **16379**          | ✅ Yes       |
+| Oracle     | 1521         | **11521**          | ✅ Yes       |
+
+**Why non-standard ports?** This prevents conflicts with:
+- Integration tests expecting standard ports
+- Other database instances on your machine  
+- Development servers running alongside Local DB Stack
+
+<details>
+<summary><b>🔧 Customizing Ports</b></summary>
+
+<br>
+
+Need different ports? Easy:
+
+```bash
+# 1. Edit configuration
+localdb-edit
+
+# 2. Change any port values, for example:
+LOCAL_POSTGRES_PORT=25432
+LOCAL_MYSQL_PORT=23306
+
+# 3. Regenerate connection files
+localdb-setup-connections
+
+# 4. Restart databases
+localdb-down && localdb-up
+
+# 5. Verify new ports
+localdb-connect
+```
+
+**Pro Tips:**
+- Choose ports above 1024 to avoid requiring sudo
+- Avoid common ports like 8080, 3000, etc.
+- Check if port is available: `lsof -i :[port_number]`
+- Document custom ports in your project README
+
+</details>
+
 ### Default Configuration
 
 ```bash
