@@ -6,7 +6,7 @@ The Local DB Stack has been configured with **maximum data durability and consis
 
 ## ✅ Configuration Status
 
-### PostgreSQL 16 (Alpine)
+### PostgreSQL 18 (Alpine)
 **Data Durability Settings:**
 - `fsync=on` - Forces data to disk before transaction commit
 - `synchronous_commit=on` - Waits for WAL writes to complete

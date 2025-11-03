@@ -2,18 +2,17 @@ name: local_db_stack
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     container_name: local_postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${LOCAL_POSTGRES_USER:-local_user}
       POSTGRES_PASSWORD: ${LOCAL_POSTGRES_PASS:-local_password}
       POSTGRES_DB: ${LOCAL_POSTGRES_DB:-local_database}
-      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "${LOCAL_POSTGRES_PORT:-15432}:5432"
     volumes:
-      - ${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     command: >
       postgres
       -c fsync=on
@@ -119,6 +118,9 @@ services:
       timeout: 10s
       retries: 10
       start_period: 120s
+
+volumes:
+  postgres_data:
 
 # Volumes now use bind mounts to ${LOCAL_DB_DATA_DIR:-$HOME/.local-db-stack/data}
 # This ensures data persists in a known location regardless of where docker-compose is run

@@ -77,7 +77,7 @@ This stack supports:
 #### Apple Silicon (M1/M2/M3 Macs)
 
 All images in this stack support ARM64 natively:
-- ✅ `postgres:16-alpine` - Native ARM64
+- ✅ `postgres:18-alpine` - Native ARM64
 - ✅ `mysql:8.0` - Native ARM64
 - ✅ `mongo:7` - Native ARM64
 - ✅ `redis:7-alpine` - Native ARM64
@@ -102,8 +102,8 @@ Most images work natively. Oracle Database Free may have limited support on ARM 
 docker buildx ls
 
 # Test pulling images for specific platform
-docker pull --platform linux/amd64 postgres:16-alpine
-docker pull --platform linux/arm64 postgres:16-alpine
+docker pull --platform linux/amd64 postgres:18-alpine
+docker pull --platform linux/arm64 postgres:18-alpine
 
 # Verify image architecture
 docker image inspect postgres:16-alpine | grep Architecture
